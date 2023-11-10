@@ -69,8 +69,33 @@ export const AppReducer = (state, action) => {
             state.currency = action.payload;
             return {
                 ...state
-            }
-
+            };
+        case 'SUBTRACT_EXPENSE':
+            let total_budget2 = 0;
+            total_budget2 = state.expenses.reduce(
+                (previousExp, currentExp) => {
+                    return previousExp + currentExp.cost
+                },0
+            );
+            total_budget2 = total_budget2 - action.payload.cost;
+            action.type = "DONE";
+            if(total_budget2 <= state.budget) {
+                total_budget2 = 0;
+                state.expenses.map((currentExp)=> {
+                    if(currentExp.name === action.payload.name) {
+                        currentExp.cost = currentExp.cost - action.payload.cost;
+                    }
+                    return currentExp
+                });
+                return {
+                    ...state,
+                };
+            } else {
+                alert("Cannot decrease the allocation! Out of funds");
+                return {
+                    ...state
+                }
+            };
         default:
             return state;
     }
@@ -84,7 +109,7 @@ const initialState = {
         { id: "Finance", name: 'Finance', cost: 300 },
         { id: "Sales", name: 'Sales', cost: 70 },
         { id: "Human Resource", name: 'Human Resource', cost: 40 },
-        { id: "IT", name: 'IT', cost: 500 },
+        { id: "IT", name: 'IT', cost: 500 }
     ],
     currency: '£'
 };
